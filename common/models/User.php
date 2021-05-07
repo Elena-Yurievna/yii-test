@@ -5,6 +5,7 @@ use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 
 /**
@@ -27,6 +28,12 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
+
+    const ROLE_PROVIDER = 'provider';
+    const ROLE_CUSTOMER = 'customer';
+    const ROLE_ADMIN = 'admin';
+
+    public $roles;
 
 
     /**
@@ -209,5 +216,57 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    public function __construct()
+    {
+        $this->on(self::EVENT_AFTER_UPDATE, [$this, 'saveRoles']);
+//        return parent::__construct($config);
+    }
+
+    /**
+     * Revoke old roles and assign new if any
+     */
+    public function saveRoles()
+    {
+        Yii::$app->authManager->revokeAll($this->getId());
+
+        if (is_array($this->roles)) {
+            foreach ($this->roles as $roleName) {
+                if ($role = Yii::$app->authManager->getRole($roleName)) {
+                    Yii::$app->authManager->assign($role, $this->getId());
+                }
+            }
+        }
+    }
+
+    /**
+     * Populate roles attribute with data from RBAC after record loaded from DB
+     */
+    public function afterFind()
+    {
+        $this->roles = $this->getRoles();
+    }
+
+    /**
+     * Get user roles from RBAC
+     * @return array
+     */
+    public function getRoles()
+    {
+        $roles = Yii::$app->authManager->getRolesByUser($this->getId());
+        return ArrayHelper::getColumn($roles, 'name', false);
+    }
+
+    /**
+     * @return array
+     */
+    public function getRolesDropdown()
+    {
+        return [
+            self::ROLE_ADMIN => 'Admin',
+            self::ROLE_PROVIDER => 'Provider',
+            self::ROLE_CUSTOMER => 'Customer',
+        ];
     }
 }

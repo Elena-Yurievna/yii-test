@@ -23,8 +23,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <?= $form->field($model, 'email') ?>
 
-<!--            --><?//= // getRoles roles[] ->?>
-<!---->
+            <?= $form->field($model, 'roles')->checkboxList($model->getRolesDropdown()) ?>
+
             <?= $form->field($model, 'password')->passwordInput() ?>
 
             <div class="form-group">

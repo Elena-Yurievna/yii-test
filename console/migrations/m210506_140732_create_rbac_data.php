@@ -95,18 +95,10 @@ class m210506_140732_create_rbac_data extends Migration
         return false;
     }
 
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
-
-    }
-
     public function down()
     {
-        echo "m210506_140732_create_rbac_data cannot be reverted.\n";
+        $auth = Yii::$app->authManager;
 
-        return false;
+        $auth->removeAll();
     }
-    */
 }

@@ -4,6 +4,7 @@ namespace frontend\models;
 use Yii;
 use yii\base\Model;
 use common\models\User;
+use yii\helpers\Url;
 
 /**
  * Password reset request form
@@ -11,7 +12,6 @@ use common\models\User;
 class PasswordResetRequestForm extends Model
 {
     public $email;
-
 
     /**
      * {@inheritdoc}
@@ -35,6 +35,7 @@ class PasswordResetRequestForm extends Model
      *
      * @return bool whether the email was send
      */
+
     public function sendEmail()
     {
         /* @var $user User */
@@ -46,7 +47,7 @@ class PasswordResetRequestForm extends Model
         if (!$user) {
             return false;
         }
-        
+
         if (!User::isPasswordResetTokenValid($user->password_reset_token)) {
             $user->generatePasswordResetToken();
             if (!$user->save()) {
@@ -54,15 +55,18 @@ class PasswordResetRequestForm extends Model
             }
         }
 
-        return Yii::$app
-            ->mailer
-            ->compose(
-                ['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'],
-                ['user' => $user]
-            )
-            ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name . ' robot'])
-            ->setTo($this->email)
-            ->setSubject('Password reset for ' . Yii::$app->name)
-            ->send();
+        // reset password link
+        $resetLink = Yii::$app->urlManager->createAbsoluteUrl(['site/reset-password', 'token' => $user->password_reset_token]);
+
+        Yii::$app->response->redirect(Url::to($resetLink));
+        // а это работает
+
+//        return $this->redirect([$resetLink]);
+//            не работает почему-то
+
+
+        // хом ссылка на хом
+        // site/reset-password
+        // хеш есть $user->password_reset_token
     }
 }

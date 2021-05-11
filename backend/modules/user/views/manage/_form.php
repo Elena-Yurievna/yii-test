@@ -14,7 +14,14 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'status')->textInput() ?>
 
+    <?= $form->field($model, 'email')->textInput() ?>
+
     <?= $form->field($model, 'roles')->checkboxList($model->getRolesDropdown()) ?>
+
+    <!--    reset password inputs-->
+
+    reset password field:
+    <!--    reset password inputs-->
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

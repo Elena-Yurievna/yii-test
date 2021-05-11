@@ -6,6 +6,7 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 use yii\web\IdentityInterface;
 
 /**
@@ -61,6 +62,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             ['roles', 'safe'],
+            ['email', 'safe'],
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
         ];
@@ -221,6 +223,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function __construct()
     {
         $this->on(self::EVENT_AFTER_UPDATE, [$this, 'saveRoles']);
+        $this->on(self::EVENT_AFTER_UPDATE, [$this, 'saveNewEmail']);
 //        return parent::__construct($config);
     }
 
@@ -237,6 +240,19 @@ class User extends ActiveRecord implements IdentityInterface
                     Yii::$app->authManager->assign($role, $this->getId());
                 }
             }
+        }
+    }
+
+    public function saveNewEmail()
+    {
+        /* @var $user User */
+        $user = User::findOne([
+            'email' => $this->email,
+            'status' => User::STATUS_ACTIVE
+        ]);
+
+        if (!$user === null) {
+            $user->save();
         }
     }
 

@@ -2,25 +2,22 @@
 
 namespace frontend\controllers;
 
-use frontend\models\Product;
-use Yii;
+use common\models\ReservedProducts;
 use frontend\models\Warehouse;
+use frontend\models\WarehouseToProduct;
+use Yii;
+use frontend\models\Product;
+use yii\base\BaseObject;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * WarehouseController implements the CRUD actions for Warehouse model.
+ * ProductController implements the CRUD actions for Product model.
  */
-class WarehouseController extends Controller
+class ProductController extends Controller
 {
-
-
-    public function afterFind() {
-
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -28,7 +25,7 @@ class WarehouseController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -37,13 +34,13 @@ class WarehouseController extends Controller
     }
 
     /**
-     * Lists all Warehouse models.
+     * Lists all Product models.
      * @return mixed
      */
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Warehouse::find(),
+            'query' => Product::find(),
         ]);
 
         return $this->render('index', [
@@ -52,7 +49,7 @@ class WarehouseController extends Controller
     }
 
     /**
-     * Displays a single Warehouse model.
+     * Displays a single Product model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -61,18 +58,44 @@ class WarehouseController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
-            'products_id' => Product::find()->all(),
         ]);
     }
 
+    public function actionReserve($id)
+    {
+
+        $model = $this->findModel($id);
+
+        $connection = Yii::$app->db;
+        $relation = new WarehouseToProduct();
+        $new_reserved = new ReservedProducts();
+        $transaction = $connection->beginTransaction();
+
+        if ( $model->save()) {
+            $relation->product_id = $model->id;
+            $relation->warehouse_id = $model->warehouse_id;
+
+            $new_reserved->user_id = $model->provider_id;
+            $new_reserved->product_id = $model->id;
+        }
+
+        if ($relation->save() && $new_reserved->save()){
+            $transaction->commit();
+            return $this->redirect(['index']);
+        } else {
+            $transaction->rollBack();
+        }
+
+    }
+
     /**
-     * Creates a new Warehouse model.
+     * Creates a new Product model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Warehouse();
+        $model = new Product();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -80,12 +103,11 @@ class WarehouseController extends Controller
 
         return $this->render('create', [
             'model' => $model,
-            'products_id' => Product::find()->all()
         ]);
     }
 
     /**
-     * Updates an existing Warehouse model.
+     * Updates an existing Product model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -101,13 +123,11 @@ class WarehouseController extends Controller
 
         return $this->render('update', [
             'model' => $model,
-            'products_id' => Product::find()->all()
         ]);
-
     }
 
     /**
-     * Deletes an existing Warehouse model.
+     * Deletes an existing Product model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -121,15 +141,15 @@ class WarehouseController extends Controller
     }
 
     /**
-     * Finds the Warehouse model based on its primary key value.
+     * Finds the Product model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Warehouse the loaded model
+     * @return Product the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Warehouse::findOne($id)) !== null) {
+        if (($model = Product::findOne($id)) !== null) {
             return $model;
         }
 

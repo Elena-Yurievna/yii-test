@@ -1,6 +1,8 @@
 <?php
 namespace backend\models;
 
+use common\models\ReservedProducts;
+use frontend\models\Product;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -284,5 +286,25 @@ class User extends ActiveRecord implements IdentityInterface
             self::ROLE_PROVIDER => 'Provider',
             self::ROLE_CUSTOMER => 'Customer',
         ];
+    }
+
+
+    public function getReservedList()
+    {
+        return $this->hasMany(ReservedProducts::class, ['user_id' => 'id'])->all();
+    }
+
+    public function getAllProducts()
+    {
+        $products_id = [];
+
+        foreach ($this->getReservedList() as $reserved) {
+            $products_id[$reserved->product_id] =
+                empty($products_id[$reserved->product_id]) ?
+                    1 :
+                    $products_id[$reserved->product_id] + 1 ;
+        }
+
+        return $products_id;
     }
 }

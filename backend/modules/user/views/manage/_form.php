@@ -21,7 +21,16 @@ use yii\widgets\ActiveForm;
     <!--    reset password inputs-->
 
     reset password field:
-    <!--    reset password inputs-->
+    <div class="lb-user-module-profile-password">
+        <?= $form->field($model, 'password')->passwordInput([
+            'maxlength' => true,
+            'placeholder' => $model->getAttributeLabel('password'),
+            'class' => 'form-control password'
+        ]) ?>
+
+        <a href="javascript:void(0)" class="change_password lnk"><?= Yii::t('user', 'Изменить пароль')?></a>
+
+    </div>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

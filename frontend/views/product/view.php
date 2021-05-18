@@ -1,23 +1,23 @@
 <?php
 
-use backend\models\User;
+use frontend\models\Product;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model backend\models\User */
+/* @var $model frontend\models\Product */
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
+$this->title = $model->name;
+$this->params['breadcrumbs'][] = ['label' => 'Products', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+\yii\web\YiiAsset::register($this);
 ?>
-<div class="user-view">
+<div class="product-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Update password'), ['password-change'], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
@@ -31,30 +31,21 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'username',
-            'email:email',
-            'status',
-            'created_at:datetime',
-            'updated_at:datetime',
+            'name',
+            'warehouse_id',
+            'provider_id',
             [
-                'attribute' => 'roles',
-                'value' => function($user) {
-                    /* @var $user User */
-                    return implode(',', $user->getRoles());
-                }
-            ],
-            [
-                'attribute' => 'ID of reserved products',
+                'attribute' => 'Reserved by User',
                 'value' => function($model) {
-                    /** @var User $model */
-                    $vartest = $model->getAllProducts();
+                    /* @var Product $model */
+                    $vartest = $model->getReservedUserList();
 
                     $result = '';
                     foreach ($vartest as $fruit => $n) {
                         if ($n > 1) {
                             $result .= $fruit . '(' . $n . '), ';
                         } else {
-                            $result .= $fruit.', ';
+                            $result .= $fruit;
                         }
                     }
 
@@ -63,7 +54,6 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ]) ?>
-
 
 
 </div>

@@ -26,7 +26,6 @@ class m210511_113712_warehouse_example extends Migration
         $this->createTable('warehouse', [
             'id' => $this->primaryKey(),
             'name' => $this->string(),
-            'products_id' => $this->integer()->notNull(),
             'products_quantity' => $this->integer()->notNull(),
             'provider_id' => $this->integer()->notNull(),
         ]);
@@ -34,7 +33,6 @@ class m210511_113712_warehouse_example extends Migration
         $this->insert('warehouse', [
             'id' => 1,
             'name' => 'warehouse 1',
-            'products_id' => [1,2,3],
             'products_quantity' => 3,
             'provider_id' => 3
         ]);

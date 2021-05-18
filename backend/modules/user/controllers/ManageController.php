@@ -2,6 +2,7 @@
 
 namespace backend\modules\user\controllers;
 
+use backend\models\PasswordChangeForm;
 use Yii;
 use backend\models\User;
 use yii\data\ActiveDataProvider;
@@ -29,7 +30,7 @@ class ManageController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'view'],
+                        'actions' => ['index', 'view', 'password-change'],
                         'roles' => ['admin', 'provider', 'customer'],
                     ],
                     [
@@ -37,6 +38,8 @@ class ManageController extends Controller
                         'actions' => ['delete', 'update'],
                         'roles' => ['admin'],
                     ],
+//                    если в сессии хванится айдишник == текущий
+//                    Yii::$app->user->id ==
                 ],
             ],
         ];
@@ -118,6 +121,21 @@ class ManageController extends Controller
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+
+    public function actionPasswordChange($id)
+    {
+        $user = $this->findModel($id);
+
+        $model = new PasswordChangeForm($user);
+
+        if ($model->load(Yii::$app->request->post()) && $model->changePassword()) {
+            return $this->redirect(['index']);
+        } else {
+            return $this->render('passwordChange', [
+                'model' => $model,
+            ]);
         }
     }
 }

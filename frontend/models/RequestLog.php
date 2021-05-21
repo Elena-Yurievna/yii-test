@@ -63,7 +63,7 @@ class RequestLog extends ActiveRecord {
     private static function hideFields(&$rawRequestBody, $fieldsToHide)
     {
         foreach ($rawRequestBody as $field => $value) {
-            // check the value of the array or not, if so then call it again
+            // check value array or not, if yes then call again
             if (is_array($value)) {
                 self::hideFields($rawRequestBody[$field], $fieldsToHide);
             } else {

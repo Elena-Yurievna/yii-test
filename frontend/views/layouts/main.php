@@ -37,13 +37,15 @@ AppAsset::register($this);
         ],
     ]);
 
-    $menuItems = [
-            // ссылка на ТИПО мою страницу
-        ['label' => 'Account', 'url' => Yii::$app->urlManagerBackend->createAbsoluteUrl(['user/manage/view', 'id' => Yii::$app->user->identity->id])],
+    $menuItems = [];
 
-        ['label' => 'Products', 'url' => ['/product']],
-        ['label' => 'Warehouse', 'url' => ['/warehouse']],
-    ];
+    if (!empty(Yii::$app->user->identity->id)) {
+        $menuItems[] =  ['label' => 'Account', 'url' => Yii::$app->urlManagerBackend->createAbsoluteUrl(['user/manage/view', 'id' => Yii::$app->user->identity->id])];
+    }
+
+    $menuItems[] = ['label' => 'Products', 'url' => ['/product']];
+    $menuItems[] = ['label' => 'Warehouse', 'url' => ['/warehouse']];
+
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Signup', 'url' => Url::to(['/site/signup'])];
         $menuItems[] = ['label' => 'Login', 'url' => Url::to(['/site/login'])];

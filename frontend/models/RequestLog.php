@@ -54,7 +54,7 @@ class RequestLog extends ActiveRecord {
                 if (is_array($rawRequestBody)) {
                     // this (вообще-то селф)
                     // РЕКУРСИЯ
-                    self::fieldsToHide($rawRequestBody, $fieldsToHide);
+                    self::hideFields($rawRequestBody, $fieldsToHide);
                 }
                 $requestBody['raw_request_body'] = json_encode($rawRequestBody);
             }
@@ -62,13 +62,13 @@ class RequestLog extends ActiveRecord {
     }
 
     // вынести в отдельный метод передать &$requestBody + список полей $fieldsToHide
-    private static function fieldsToHide(&$rawRequestBody, $fieldsToHide)
+    private static function hideFields(&$rawRequestBody, $fieldsToHide)
     {
         foreach ($rawRequestBody as $field => $value) {
             // проверить value масив или нет, если да то вызвать еще раз
             if (is_array($value)) {
                 // передать поля
-                self::fieldsToHide($rawRequestBody[$field], $fieldsToHide);
+                self::hideFields($rawRequestBody[$field], $fieldsToHide);
             } else {
                 if (in_array($field, $fieldsToHide)) {
                     $rawRequestBody[$field] = str_repeat('*', strlen($value)); //не работает

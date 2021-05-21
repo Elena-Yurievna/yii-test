@@ -9,6 +9,7 @@ use Yii;
 use frontend\models\Product;
 use yii\base\BaseObject;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -16,7 +17,7 @@ use yii\filters\VerbFilter;
 /**
  * ProductController implements the CRUD actions for Product model.
  */
-class ProductController extends Controller
+class ProductController extends BaseController
 {
     /**
      * {@inheritdoc}
@@ -25,9 +26,29 @@ class ProductController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::class,
+                'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view'],
+                        'roles' => ['admin', 'provider', 'customer', 'reserve'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['update', 'view', 'index', 'reserve'],
+                        'roles' => ['provider'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['delete', 'update'],
+                        'roles' => ['admin'],
+                    ],
                 ],
             ],
         ];
@@ -69,13 +90,15 @@ class ProductController extends Controller
         $connection = Yii::$app->db;
         $relation = new WarehouseToProduct();
         $new_reserved = new ReservedProducts();
+        // транзакции чтоб не сохранить продукт миллион раз с ошибками
         $transaction = $connection->beginTransaction();
 
         if ( $model->save()) {
             $relation->product_id = $model->id;
             $relation->warehouse_id = $model->warehouse_id;
 
-            $new_reserved->user_id = $model->provider_id;
+            // записать айдишник юзера
+            $new_reserved->user_id = Yii::$app->user->identity->id;
             $new_reserved->product_id = $model->id;
         }
 

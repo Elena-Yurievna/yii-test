@@ -33,6 +33,12 @@ services:
     volumes:
       - "./runtime/docker/database:/var/lib/mysql"
 
+
+  mongo:
+    image: mongo
+    ports:
+      - '27017:27017'
+
   app:
     depends_on:
     - db

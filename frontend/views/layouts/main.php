@@ -36,10 +36,13 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
+
     $menuItems = [
-        ['label' => 'Home', 'url' => ['/site/index']],
-        ['label' => 'About', 'url' => ['/site/about']],
-        ['label' => 'Contact', 'url' => ['/site/contact']],
+            // ссылка на ТИПО мою страницу
+        ['label' => 'Account', 'url' => Yii::$app->urlManagerBackend->createAbsoluteUrl(['user/manage/view', 'id' => Yii::$app->user->identity->id])],
+
+        ['label' => 'Products', 'url' => ['/product']],
+        ['label' => 'Warehouse', 'url' => ['/warehouse']],
     ];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Signup', 'url' => Url::to(['/site/signup'])];

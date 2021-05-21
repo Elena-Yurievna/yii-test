@@ -1,6 +1,7 @@
 # yii console commands
 /yii
 /yii_test
+/frontend/Yii.php
 /yii_test.bat
 
 # phpstorm project files

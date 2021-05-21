@@ -42,6 +42,14 @@ return [
             'rules' => [
             ],
         ],
+        // ссылка на аккаунт чтоб была
+        'urlManagerBackend'=>[
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'class' => 'yii\web\UrlManager',
+            'scriptUrl' => '',
+            'baseUrl' => 'http://localhost:21080/',
+		],
     ],
     'params' => $params,
 ];

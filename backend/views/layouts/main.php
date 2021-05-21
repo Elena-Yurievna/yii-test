@@ -36,6 +36,9 @@ AppAsset::register($this);
         ],
     ]);
     $menuItems = [
+        ['label' => 'Warehouse', 'url' => Yii::$app->urlManagerFrontend->createAbsoluteUrl(['warehouse'])],
+        ['label' => 'Product', 'url' => Yii::$app->urlManagerFrontend->createAbsoluteUrl(['product'])],
+
         ['label' => 'Home', 'url' => ['/site/index']],
         ['label' => 'Users', 'url' => ['/user/manage']],
     ];

@@ -2,7 +2,9 @@
 
 namespace backend\modules\user\controllers;
 
+use frontend\models\RequestLog;
 use backend\models\PasswordChangeForm;
+use frontend\controllers\BaseController;
 use Yii;
 use backend\models\User;
 use yii\data\ActiveDataProvider;
@@ -14,7 +16,7 @@ use yii\filters\VerbFilter;
 /**
  * ManageController implements the CRUD actions for User model.
  */
-class ManageController extends Controller
+class ManageController extends BaseController
 {
     public function behaviors()
     {
@@ -30,16 +32,19 @@ class ManageController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'view', 'password-change'],
+                        'actions' => ['index', 'view'],
                         'roles' => ['admin', 'provider', 'customer'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['update', 'view', 'index'],
+                        'roles' => ['provider'],
                     ],
                     [
                         'allow' => true,
                         'actions' => ['delete', 'update'],
                         'roles' => ['admin'],
                     ],
-//                    если в сессии хванится айдишник == текущий
-//                    Yii::$app->user->id ==
                 ],
             ],
         ];
@@ -68,6 +73,8 @@ class ManageController extends Controller
      * Displays a single User model.
      * @param integer $id
      * @return mixed
+     * @throws \yii\mongodb\Exception
+     * @throws NotFoundHttpException
      */
     public function actionView($id)
     {
@@ -81,6 +88,7 @@ class ManageController extends Controller
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
+     * @throws NotFoundHttpException
      */
     public function actionUpdate($id)
     {
@@ -100,6 +108,7 @@ class ManageController extends Controller
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
+     * @throws NotFoundHttpException
      */
     public function actionDelete($id)
     {
@@ -124,6 +133,9 @@ class ManageController extends Controller
         }
     }
 
+    /**
+     * @throws NotFoundHttpException
+     */
     public function actionPasswordChange($id)
     {
         $user = $this->findModel($id);

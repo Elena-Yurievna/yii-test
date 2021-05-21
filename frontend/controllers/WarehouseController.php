@@ -6,6 +6,7 @@ use frontend\models\Product;
 use Yii;
 use frontend\models\Warehouse;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -13,17 +14,9 @@ use yii\filters\VerbFilter;
 /**
  * WarehouseController implements the CRUD actions for Warehouse model.
  */
-class WarehouseController extends Controller
+class WarehouseController extends BaseController
 {
 
-
-    public function afterFind() {
-
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function behaviors()
     {
         return [
@@ -31,6 +24,26 @@ class WarehouseController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view'],
+                        'roles' => ['admin', 'provider', 'customer'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['update', 'view', 'index'],
+                        'roles' => ['provider'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['delete', 'update'],
+                        'roles' => ['admin'],
+                    ],
                 ],
             ],
         ];

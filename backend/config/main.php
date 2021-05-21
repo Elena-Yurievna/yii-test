@@ -15,6 +15,14 @@ return [
         'gii' => [
             'class' => 'yii\gii\Module'
         ],
+//        'gii' => [
+//            'class' => 'yii\gii\Module',
+//            'generators' => [
+//                'mongoDbModel' => [
+//                    'class' => 'yii\mongodb\gii\model\Generator'
+//                ]
+//            ],
+//        ],
         'user' => [
             'class' => 'backend\modules\user\Module',
         ],
@@ -49,6 +57,14 @@ return [
             'showScriptName' => false,
             'rules' => [
             ],
+        ],
+        // ссылка на аккаунт чтоб была
+        'urlManagerFrontend'=>[
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'class' => 'yii\web\UrlManager',
+            'scriptUrl' => '',
+            'baseUrl' => 'http://localhost:20080/',
         ],
     ],
     'params' => $params,

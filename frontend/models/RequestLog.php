@@ -68,7 +68,7 @@ class RequestLog extends ActiveRecord {
                 self::hideFields($rawRequestBody[$field], $fieldsToHide);
             } else {
                 if (in_array($field, $fieldsToHide)) {
-                    $rawRequestBody[$field] = str_repeat('*', strlen($value)); //не работает
+                    $rawRequestBody[$field] = str_repeat('*', strlen($value));
                 }
             }
         }
